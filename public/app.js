@@ -72,9 +72,9 @@
   function refreshNews() {
     if (busy.news) return Promise.resolve(); busy.news = true;
     return (base ? api('/api/news').catch(function () { return request('./news.json'); }) : request('./news.json')).then(function (data) {
-      if (!core.isFresh(data.updatedAt, (data.delivery === 'static' ? 45 : 15) * 60000, Date.now()) || !Array.isArray(data.articles) || !data.articles.length) throw new Error('최신 뉴스를 확인할 수 없습니다.');
+      if (!core.isFresh(data.updatedAt, (data.delivery === 'static' ? 180 : 60) * 60000, Date.now()) || !Array.isArray(data.articles) || !data.articles.length) throw new Error('최신 뉴스를 확인할 수 없습니다.');
       renderNews(data); lastNews = data; latest.news = data.updatedAt;
-      status('news', '갱신 ' + timeLabel(data.updatedAt) + ' · Google 뉴스 · ' + (data.delivery === 'static' ? '15분 간격 자동 게시' : '5분마다 확인'), false);
+      status('news', '갱신 ' + timeLabel(data.updatedAt) + ' · Google 뉴스 · ' + (data.delivery === 'static' ? '정적 게시본' : '5분마다 확인'), false);
       try { localStorage.setItem('morning-news-v1', JSON.stringify(data)); } catch (_) {}
     }).catch(function (error) {
       if (!lastNews) { el('news-list').textContent = ''; el('news-list').appendChild(node('li', 'empty-state', '최신 뉴스를 불러오지 못했습니다.')); }
@@ -127,6 +127,9 @@
   try { var cached = JSON.parse(localStorage.getItem('morning-news-v1')); if (cached && core.isFresh(cached.updatedAt, 48 * 3600000, Date.now()) && Array.isArray(cached.articles)) { lastNews = cached; renderNews(cached); status('news', '이전 뉴스 표시 · 연결 확인 중', true); } } catch (_) {}
   tick(); connection(); refreshAll(); keepAwake();
   setInterval(tick, 1000);
+  // A tablet left open never picks up new deploys on its own; reload every 6 hours while visible.
+  var loadedAt = Date.now();
+  setInterval(function () { if (!document.hidden && navigator.onLine && Date.now() - loadedAt > 6 * 3600000) location.reload(); }, 600000);
   setInterval(function () { if (!document.hidden) refreshBus(); }, Math.max(30000, config.busRefreshMs || 30000));
   setInterval(function () { if (!document.hidden) refreshNews(); }, Math.max(300000, config.newsRefreshMs || 300000));
   setInterval(function () { if (!document.hidden) refreshWeather(); }, Math.max(600000, config.weatherRefreshMs || 600000));
