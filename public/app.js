@@ -101,7 +101,8 @@
   }
   function connection() { el('connection').hidden = navigator.onLine; put('connection', '오프라인입니다. 시간과 오늘의 메시지는 계속 표시되며, 연결이 복구되면 정보를 갱신합니다.'); }
   function keepAwake() {
-    if (navigator.wakeLock && document.visibilityState === 'visible' && (document.fullscreenElement || document.webkitFullscreenElement)) {
+    // Keep the tablet screen on whenever the dashboard is visible, fullscreen or not.
+    if (navigator.wakeLock && document.visibilityState === 'visible' && !(wakeLock && !wakeLock.released)) {
       navigator.wakeLock.request('screen').then(function (lock) { wakeLock = lock; }).catch(function () {});
     }
   }
@@ -109,7 +110,6 @@
     var active = document.fullscreenElement || document.webkitFullscreenElement, result;
     if (active) {
       var exit = document.exitFullscreen || document.webkitExitFullscreen; if (exit) result = exit.call(document);
-      if (wakeLock) { wakeLock.release(); wakeLock = null; }
     } else {
       var enter = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen;
       if (!enter) { put('footer-status', '브라우저 메뉴에서 전체 화면을 사용해 주세요.'); return; }
@@ -117,14 +117,15 @@
     }
     if (result && result.catch) result.catch(function () { put('footer-status', '전체 화면을 시작할 수 없습니다.'); });
   });
-  function fullscreenChanged() { var active = document.fullscreenElement || document.webkitFullscreenElement; el('fullscreen').setAttribute('aria-label', active ? '전체 화면 종료' : '전체 화면 시작'); if (active) keepAwake(); else if (wakeLock) { wakeLock.release(); wakeLock = null; } }
+  function fullscreenChanged() { var active = document.fullscreenElement || document.webkitFullscreenElement; el('fullscreen').setAttribute('aria-label', active ? '전체 화면 종료' : '전체 화면 시작'); keepAwake(); }
+  document.addEventListener('pointerdown', keepAwake);
   document.addEventListener('fullscreenchange', fullscreenChanged); document.addEventListener('webkitfullscreenchange', fullscreenChanged);
   el('refresh').addEventListener('click', refreshAll);
   window.addEventListener('offline', connection); window.addEventListener('online', function () { connection(); refreshAll(); });
   document.addEventListener('visibilitychange', function () { if (!document.hidden) { tick(); refreshAll(); keepAwake(); } });
   try { var url = new URL(config.apiBaseUrl); if (url.protocol === 'https:' || (url.protocol === 'http:' && ['localhost', '127.0.0.1'].indexOf(url.hostname) !== -1)) base = url.origin; } catch (_) {}
   try { var cached = JSON.parse(localStorage.getItem('morning-news-v1')); if (cached && core.isFresh(cached.updatedAt, 48 * 3600000, Date.now()) && Array.isArray(cached.articles)) { lastNews = cached; renderNews(cached); status('news', '이전 뉴스 표시 · 연결 확인 중', true); } } catch (_) {}
-  tick(); connection(); refreshAll();
+  tick(); connection(); refreshAll(); keepAwake();
   setInterval(tick, 1000);
   setInterval(function () { if (!document.hidden) refreshBus(); }, Math.max(30000, config.busRefreshMs || 30000));
   setInterval(function () { if (!document.hidden) refreshNews(); }, Math.max(300000, config.newsRefreshMs || 300000));
