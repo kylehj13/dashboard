@@ -71,7 +71,7 @@
   }
   function refreshNews() {
     if (busy.news) return Promise.resolve(); busy.news = true;
-    return (base ? api('/api/news') : request('./news.json')).then(function (data) {
+    return (base ? api('/api/news').catch(function () { return request('./news.json'); }) : request('./news.json')).then(function (data) {
       if (!core.isFresh(data.updatedAt, (data.delivery === 'static' ? 45 : 15) * 60000, Date.now()) || !Array.isArray(data.articles) || !data.articles.length) throw new Error('최신 뉴스를 확인할 수 없습니다.');
       renderNews(data); lastNews = data; latest.news = data.updatedAt;
       status('news', '갱신 ' + timeLabel(data.updatedAt) + ' · Google 뉴스 · ' + (data.delivery === 'static' ? '15분 간격 자동 게시' : '5분마다 확인'), false);

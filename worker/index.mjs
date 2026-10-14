@@ -53,7 +53,7 @@ export function verifyDirection(stops, stationId) {
 
 export async function resolveBus(key, fetcher = fetch) {
   const stations = await gbis('busstationservice', 'getBusStationListv2', { keyword: '26052' }, key, fetcher);
-  const matches = array(stations.busStationList).filter(stop => String(stop.mobileNo) === '26052' && String(stop.stationName).includes('충무') && String(stop.regionName).includes('군포'));
+  const matches = array(stations.busStationList).filter(stop => String(stop.mobileNo).trim() === '26052' && String(stop.stationName).includes('충무') && String(stop.regionName).includes('군포'));
   if (matches.length !== 1) throw new DataError('BUS_STATION_ERROR', '주공2단지충무아파트 정류장(26052)을 확인할 수 없습니다.');
   const stationId = String(matches[0].stationId);
   const routes = await gbis('busstationservice', 'getBusStationViaRouteListv2', { stationId }, key, fetcher);
