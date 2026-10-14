@@ -1,0 +1,9 @@
+name = "morning-dashboard-api"
+main = "index.mjs"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGINS = "https://kylehj13.github.io,http://localhost:8080,http://127.0.0.1:8080"
+
+# DATA_GO_KR_SERVICE_KEY is a Worker secret, never a variable in this file.

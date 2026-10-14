@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101418">
+  <meta name="description" content="산본에서 시작하는 하루. 시간, 날씨, 3500번 버스, 주요 뉴스와 오늘의 응원.">
+  <title>Morning Dashboard · 산본</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./config.js" defer></script>
+  <script src="./core.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Morning Dashboard 홈"><span class="brand-mark" aria-hidden="true">◒</span> MORNING <span class="brand-light">DASHBOARD</span></a>
+      <div class="toolbar">
+        <span class="location"><span class="live-dot" aria-hidden="true"></span> 군포 · 산본</span>
+        <button id="refresh" class="icon-button" type="button" aria-label="모든 정보 새로고침" title="새로고침">↻</button>
+        <button id="fullscreen" class="icon-button" type="button" aria-label="전체 화면 시작" title="전체 화면">⛶</button>
+      </div>
+    </header>
+
+    <p id="connection" class="connection" role="status" hidden></p>
+    <main class="dashboard">
+      <section class="card clock-card" aria-label="현재 시간과 날짜">
+        <div class="eyebrow"><span class="mint-dash"></span> <span id="greeting">오늘도, 좋은 하루</span></div>
+        <div class="clock"><time id="clock">--:--</time><span id="seconds" aria-hidden="true">--</span></div>
+        <div class="clock-bottom"><p id="date">날짜를 불러오는 중</p><span class="timezone">SEOUL / KST</span></div>
+      </section>
+
+      <section class="card weather-card" aria-labelledby="weather-heading">
+        <div class="card-top"><h2 id="weather-heading">산본의 지금</h2><span class="eyebrow">WEATHER</span></div>
+        <div class="weather-main"><span id="weather-icon" class="weather-icon" aria-hidden="true">☁</span><strong id="temperature">--<span>°</span></strong><div><p id="weather-description">날씨 확인 중</p><p class="muted">경기도 군포시 산본</p></div></div>
+        <div class="weather-details"><span>체감 <b id="feels-like">--°</b></span><span>습도 <b id="humidity">--%</b></span><span>바람 <b id="wind">-- m/s</b></span></div>
+        <p id="weather-status" class="data-status" role="status">실시간 날씨를 불러오고 있습니다.</p>
+      </section>
+
+      <section class="card bus-card" aria-labelledby="bus-heading">
+        <div class="card-top"><h2 id="bus-heading">집 앞 버스</h2><span class="tag">산본역 방향 ↗</span></div>
+        <div class="bus-route"><strong>3500</strong><div><p>주공2단지충무아파트</p><span class="muted">정류장 26052 · 직행좌석</span></div></div>
+        <div id="bus-arrivals" class="bus-arrivals"><div class="empty-state">도착정보를 확인하고 있습니다.</div></div>
+        <p id="bus-status" class="data-status" role="status">30초마다 자동 갱신</p>
+      </section>
+
+      <section class="card news-card" aria-labelledby="news-heading">
+        <div class="card-top"><div class="title-group"><h2 id="news-heading">세상은 지금</h2><span class="muted">국내 주요 뉴스</span></div><span class="eyebrow">HEADLINES</span></div>
+        <ol id="news-list" class="news-list"><li class="empty-state">최신 뉴스를 불러오고 있습니다.</li></ol>
+        <p id="news-status" class="data-status" role="status">5분마다 자동 갱신 · Google 뉴스</p>
+      </section>
+
+      <section class="card quote-card" aria-labelledby="quote-heading">
+        <div class="card-top"><h2 id="quote-heading">오늘의 명언</h2><span class="quote-mark" aria-hidden="true">“</span></div>
+        <blockquote id="quote">작은 시작도 충분히 좋은 시작이다.</blockquote>
+        <p class="quote-credit">MORNING NOTE · 창작 한 문장</p>
+        <p id="encouragement" class="encouragement">오늘의 당신을 응원해요.</p>
+      </section>
+
+      <section class="card fortune-card" aria-labelledby="fortune-heading">
+        <div class="card-top"><h2 id="fortune-heading">오늘의 작은 행운</h2><span class="tag subtle">오락용 창작 운세</span></div>
+        <div class="fortunes">
+          <article class="fortune"><div class="fortune-title"><span class="year">93</span><div><h3>1993년생</h3><span id="fortune-label-1993" class="mint">차분한 시작</span></div><span class="sparkle" aria-hidden="true">✧</span></div><p id="fortune-1993"></p><span id="fortune-tip-1993" class="fortune-tip"></span></article>
+          <article class="fortune"><div class="fortune-title"><span class="year lilac">98</span><div><h3>1998년생</h3><span id="fortune-label-1998" class="lilac-text">기분 좋은 발견</span></div><span class="sparkle" aria-hidden="true">✧</span></div><p id="fortune-1998"></p><span id="fortune-tip-1998" class="fortune-tip"></span></article>
+        </div>
+        <p class="fortune-disclaimer">재미와 응원을 위한 창작 메시지입니다. 실제 미래를 예측하지 않습니다.</p>
+      </section>
+    </main>
+    <footer><span>새로운 하루, 당신의 속도로.</span><span><a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">날씨 Open-Meteo</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></span><span id="footer-status">매일의 작은 시작 <span class="mint">✦</span></span></footer>
+  </div>
+</body>
+</html>
